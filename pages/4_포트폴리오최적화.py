@@ -19,11 +19,16 @@ from datetime import date, timedelta
 from utils.stock_data import get_price_history, get_usd_krw
 from utils.optimizer import (
     optimize, walkforward_backtest, efficient_frontier,
-    compute_returns, portfolio_stats, momentum_score
+    compute_returns, portfolio_stats, momentum_score,
+    sentiment_adjusted_returns
 )
 from utils.universe import UNIVERSE, SP500_TOP30, NASDAQ_TOP20, MOMENTUM_UNIVERSE
 from utils.daily_runner import (
     run_daily_analysis, load_daily, list_daily_dates, daily_result_path
+)
+from utils.ai_analysis import (
+    explain_portfolio, get_news_sentiment,
+    rebalancing_advice, interpret_backtest
 )
 
 st.set_page_config(page_title="포트폴리오 최적화 | 해외주식", layout="wide")
@@ -139,12 +144,13 @@ if daily_btn:
 # ══════════════════════════════════════════
 # 메인 탭
 # ══════════════════════════════════════════
-tab_daily, tab_opt, tab_bt, tab_ef, tab_mom = st.tabs([
+tab_daily, tab_opt, tab_bt, tab_ef, tab_mom, tab_sentiment = st.tabs([
     "📅 일일 분석 현황",
     "🎯 최적 포트폴리오",
     "📉 백테스트",
     "🌐 효율적 프론티어",
     "🚀 1개월 유망 포트폴리오",
+    "🧠 AI 통합 분석",
 ])
 
 # ─────────────────────────────────────────
@@ -196,6 +202,22 @@ with tab_daily:
             cmp_df["변화"] = cmp_df.iloc[:, 1] - cmp_df.iloc[:, 2]
             cmp_df["변화"] = cmp_df["변화"].apply(lambda x: f"{x:+.1f}%")
             st.dataframe(cmp_df, use_container_width=True, hide_index=True)
+
+        # C. AI 리밸런싱 판단
+        if today_data and yest_data:
+            st.markdown("---")
+            st.markdown("### 🤖 C. AI 리밸런싱 판단")
+            st.caption("오늘 vs 이전 포트폴리오를 비교하여 리밸런싱 필요 여부를 AI가 판단합니다.")
+            if st.button("리밸런싱 AI 판단 받기", type="primary", key="rebal_btn"):
+                with st.spinner("AI 분석 중..."):
+                    advice = rebalancing_advice(
+                        today_weights=today_data.get("weights", {}),
+                        prev_weights=yest_data.get("weights", {}),
+                        today_stats=today_data.get("stats", {}),
+                        prev_stats=yest_data.get("stats", {}),
+                        momentum_scores=today_data.get("momentum_scores", {}),
+                    )
+                st.markdown(advice)
 
         # 히스토리 테이블
         st.markdown("---")
@@ -402,6 +424,20 @@ with tab_bt:
         st.dataframe(pd.DataFrame(hist_rows), use_container_width=True,
                      hide_index=True, height=200)
 
+    # D. 백테스트 AI 해석
+    st.markdown("---")
+    st.markdown("### 🤖 D. 백테스트 결과 AI 해석")
+    st.caption("성과 지표를 AI가 해석하고 전략 개선점을 제안합니다.")
+    if st.button("백테스트 AI 해석 받기", type="primary", key="bt_ai_btn"):
+        with st.spinner("AI 분석 중..."):
+            interpretation = interpret_backtest(
+                metrics=bt_res["metrics"],
+                history=bt_res["history"],
+                model_name=MODEL_LABELS.get(model_nm, model_nm),
+                period=period,
+            )
+        st.markdown(interpretation)
+
 # ─────────────────────────────────────────
 # TAB 3 : 효율적 프론티어
 # ─────────────────────────────────────────
@@ -537,3 +573,114 @@ with tab_mom:
 - [ ] 1개월 후 모멘텀 재계산 → 리밸런싱
 - [ ] 손절 기준 사전 설정 (예: 개별 종목 -8% 이하 시 재검토)
         """)
+
+# ─────────────────────────────────────────
+# TAB 5 : 🧠 AI 통합 분석 (A + B)
+# ─────────────────────────────────────────
+with tab_sentiment:
+    st.markdown("#### 🧠 AI 통합 분석")
+
+    if "opt_result" not in st.session_state:
+        st.info("먼저 '지금 분석 실행'을 클릭하세요.")
+        st.stop()
+
+    opt_res  = st.session_state["opt_result"]
+    bt_res   = st.session_state["bt_result"]
+    prices   = st.session_state["prices"]
+    model_nm = st.session_state.get("model_name", "max_sharpe")
+    weights  = opt_res["weights"]
+    stats    = opt_res["stats"]
+
+    # ── A. 포트폴리오 비중 AI 해설
+    st.markdown("### A. 포트폴리오 비중 AI 해설")
+    st.caption("왜 이 종목이 높은 비중을 받았는지, 포트폴리오 성격을 AI가 설명합니다.")
+    if st.button("포트폴리오 AI 해설 받기", type="primary", key="explain_btn"):
+        with st.spinner("AI 분석 중..."):
+            mom_dict = {}
+            if "momentum_scores" in opt_res:
+                mom_dict = opt_res["momentum_scores"].to_dict() if hasattr(
+                    opt_res["momentum_scores"], "to_dict") else dict(opt_res["momentum_scores"])
+            explanation = explain_portfolio(
+                weights=weights,
+                stats=stats,
+                momentum_scores=mom_dict,
+                model_name=MODEL_LABELS.get(model_nm, model_nm),
+            )
+        st.markdown(explanation)
+
+    st.markdown("---")
+
+    # ── B. 뉴스 감성분석 + 보정 최적화
+    st.markdown("### B. 뉴스 감성분석 기반 최적화")
+    st.caption("최근 뉴스 헤드라인을 AI가 분석하여 기대수익률을 보정한 후 재최적화합니다.")
+
+    sentiment_boost = st.slider("감성 반영 강도", 0.05, 0.30, 0.15, 0.05,
+                                 help="0.15 = 감성 +1.0 종목의 기대수익률 15% 상향")
+
+    if st.button("뉴스 감성분석 + 재최적화", type="primary", key="sentiment_btn"):
+        tickers_for_sentiment = list(weights.keys())
+
+        with st.spinner(f"뉴스 수집 중 ({len(tickers_for_sentiment)}개 종목)..."):
+            sentiment_scores = get_news_sentiment(tickers_for_sentiment)
+
+        # 감성 점수 표시
+        st.markdown("**종목별 감성 점수**")
+        sent_df = pd.DataFrame({
+            "종목": list(sentiment_scores.keys()),
+            "감성 점수": [round(v, 3) for v in sentiment_scores.values()],
+            "판정": ["🟢 긍정" if v > 0.1 else "🔴 부정" if v < -0.1 else "⚪ 중립"
+                    for v in sentiment_scores.values()],
+        }).sort_values("감성 점수", ascending=False)
+        st.dataframe(sent_df, use_container_width=True, hide_index=True)
+
+        # 감성 보정 재최적화
+        with st.spinner("감성 보정 최적화 중..."):
+            from utils.optimizer import max_sharpe, compute_returns
+            sel_prices = prices[tickers_for_sentiment]
+            ret_df     = compute_returns(sel_prices)
+            mean_r     = ret_df.mean().values
+            cov_m      = ret_df.cov().values
+            n          = len(tickers_for_sentiment)
+
+            mean_r_adj = sentiment_adjusted_returns(
+                mean_r, tickers_for_sentiment,
+                sentiment_scores, boost=sentiment_boost
+            )
+            w_adj  = max_sharpe(mean_r_adj, cov_m, n)
+            w_dict_adj = dict(zip(tickers_for_sentiment, w_adj))
+            r_adj, v_adj, s_adj = portfolio_stats(w_adj, mean_r_adj, cov_m)
+
+        # 비교 테이블
+        st.markdown("**원본 vs 감성 보정 비중 비교**")
+        cmp_df = pd.DataFrame({
+            "종목": tickers_for_sentiment,
+            "원본 비중(%)": [round(weights.get(t, 0)*100, 1) for t in tickers_for_sentiment],
+            "감성 보정(%)": [round(w_dict_adj.get(t, 0)*100, 1) for t in tickers_for_sentiment],
+            "변화(%p)": [round((w_dict_adj.get(t,0) - weights.get(t,0))*100, 1)
+                         for t in tickers_for_sentiment],
+            "감성": [sent_df.set_index("종목")["판정"].get(t, "⚪") for t in tickers_for_sentiment],
+        }).sort_values("감성 보정(%)", ascending=False)
+
+        def color_change(val):
+            try:
+                return "color:#ef4444;font-weight:700" if float(val) > 0 else "color:#3b82f6" if float(val) < 0 else ""
+            except Exception:
+                return ""
+        try:
+            st.dataframe(cmp_df.style.map(color_change, subset=["변화(%p)"]),
+                         use_container_width=True, hide_index=True)
+        except AttributeError:
+            st.dataframe(cmp_df.style.applymap(color_change, subset=["변화(%p)"]),
+                         use_container_width=True, hide_index=True)
+
+        k1, k2, k3 = st.columns(3)
+        k1.metric("샤프비율 변화",
+                  f"{s_adj:.2f}",
+                  f"{s_adj - stats['sharpe']:+.2f}",
+                  delta_color="normal")
+        k2.metric("기대수익률 변화",
+                  f"{r_adj*100:.2f}%",
+                  f"{(r_adj - stats['annual_return'])*100:+.2f}%p")
+        k3.metric("변동성 변화",
+                  f"{v_adj*100:.2f}%",
+                  f"{(v_adj - stats['annual_volatility'])*100:+.2f}%p")

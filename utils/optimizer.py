@@ -114,6 +114,22 @@ def equal_weight(n: int) -> np.ndarray:
     return np.ones(n) / n
 
 
+def sentiment_adjusted_returns(mean_ret: np.ndarray,
+                                tickers: list,
+                                sentiment_scores: dict,
+                                boost: float = 0.15) -> np.ndarray:
+    """
+    뉴스 감성 점수로 기대수익률 보정
+    μ_adj = μ_hist * (1 + boost * sentiment)
+    boost=0.15 → 감성 +1.0이면 기대수익률 15% 상향
+    """
+    adj = mean_ret.copy()
+    for i, t in enumerate(tickers):
+        s = sentiment_scores.get(t, 0.0)
+        adj[i] = mean_ret[i] * (1 + boost * s)
+    return adj
+
+
 # ─────────────────────────────────────────────
 # 모멘텀 필터 (1개월 유망 종목 선별)
 # ─────────────────────────────────────────────
