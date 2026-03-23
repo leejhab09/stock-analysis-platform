@@ -22,7 +22,8 @@ from utils.optimizer import (
     compute_returns, portfolio_stats, momentum_score,
     sentiment_adjusted_returns
 )
-from utils.universe import UNIVERSE, SP500_TOP30, NASDAQ_TOP20, MOMENTUM_UNIVERSE
+from utils.universe import (UNIVERSE, SP500_TOP30, NASDAQ_TOP20, MOMENTUM_UNIVERSE,
+    KR_UNIVERSE, KR_ALL_TICKERS, KR_KOSPI_TOP20, KR_MOMENTUM_UNIVERSE)
 from utils.daily_runner import (
     run_daily_analysis, load_daily, list_daily_dates, daily_result_path
 )
@@ -31,7 +32,7 @@ from utils.ai_analysis import (
     rebalancing_advice, interpret_backtest
 )
 
-st.set_page_config(page_title="포트폴리오 최적화 | 해외주식", layout="wide")
+st.set_page_config(page_title="포트폴리오 최적화", layout="wide")
 
 # ── 자동 새로고침 (1시간마다)
 try:
@@ -40,12 +41,37 @@ try:
 except Exception:
     pass
 
-st.markdown("<h2 style='color:#1a56db;margin-bottom:4px;'>🧮 포트폴리오 최적화</h2>",
+market_sel = st.radio("시장", ["🇺🇸 미국", "🇰🇷 국내"], horizontal=True,
+                      label_visibility="collapsed", key="opt_market")
+IS_KR_OPT = (market_sel == "🇰🇷 국내")
+
+if IS_KR_OPT:
+    st.markdown("<h2 style='color:#c0392b;background:#FFF0F0;padding:10px 16px;"
+                "border-radius:8px;border-left:5px solid #c0392b;'>🇰🇷 국내 포트폴리오 최적화</h2>",
+                unsafe_allow_html=True)
+    ACTIVE_UNIVERSE   = KR_UNIVERSE
+    ACTIVE_ALL        = KR_ALL_TICKERS
+    ACTIVE_PRESETS    = {
+        "직접 선택":               None,
+        "🇰🇷 KOSPI TOP 20":       KR_KOSPI_TOP20,
+        "🚀 국내 모멘텀 (15종목)": KR_MOMENTUM_UNIVERSE,
+    }
+else:
+    st.markdown("<h2 style='color:#1a56db;background:#EBF5FF;padding:10px 16px;"
+                "border-radius:8px;border-left:5px solid #1a56db;'>🇺🇸 미국 포트폴리오 최적화</h2>",
+                unsafe_allow_html=True)
+    ACTIVE_UNIVERSE   = UNIVERSE
+    ACTIVE_ALL        = None
+    ACTIVE_PRESETS    = {
+        "직접 선택":               None,
+        "🚀 모멘텀 유니버스 (20종목)": MOMENTUM_UNIVERSE,
+        "🇺🇸 S&P 500 TOP 30":    SP500_TOP30,
+        "💻 나스닥 TOP 20":       NASDAQ_TOP20,
+    }
+
+st.markdown("<p style='color:#666;font-size:.85rem;margin-bottom:4px;'>"
+            "Markowitz MPT · Risk Parity · 모멘텀 필터 · Walk-forward 백테스트</p>",
             unsafe_allow_html=True)
-st.markdown(
-    "<p style='color:#666;font-size:.85rem;margin-bottom:4px;'>"
-    "Markowitz MPT · Risk Parity · 모멘텀 필터 · Walk-forward 백테스트 · 매일 자동 분석</p>",
-    unsafe_allow_html=True)
 st.warning("⚠️ 본 분석은 과거 데이터 기반 참고 자료입니다. 투자 결정의 책임은 투자자 본인에게 있습니다.", icon="⚠️")
 
 MODEL_LABELS = {
@@ -62,41 +88,29 @@ with st.sidebar:
     st.markdown("### 📦 종목 유니버스")
 
     # 프리셋 버튼
-    preset = st.selectbox("빠른 프리셋", [
-        "직접 선택",
-        "🚀 모멘텀 유니버스 (20종목)",
-        "🇺🇸 S&P 500 TOP 30",
-        "💻 나스닥 TOP 20",
-    ])
-
-    if preset == "🚀 모멘텀 유니버스 (20종목)":
-        preset_tickers = MOMENTUM_UNIVERSE
-    elif preset == "🇺🇸 S&P 500 TOP 30":
-        preset_tickers = SP500_TOP30
-    elif preset == "💻 나스닥 TOP 20":
-        preset_tickers = NASDAQ_TOP20
-    else:
-        preset_tickers = None
+    preset = st.selectbox("빠른 프리셋", list(ACTIVE_PRESETS.keys()))
+    preset_tickers = ACTIVE_PRESETS[preset]
 
     # 섹터 선택
     st.markdown("**섹터별 종목 추가**")
     sector_sel = st.multiselect(
         "섹터 선택 (중복 가능)",
-        list(UNIVERSE.keys()),
+        list(ACTIVE_UNIVERSE.keys()),
         default=[],
         help="섹터를 선택하면 해당 종목이 자동 추가됩니다."
     )
 
     sector_tickers = []
     for s in sector_sel:
-        sector_tickers += UNIVERSE[s]["tickers"]
-        with st.expander(f"{s} ({len(UNIVERSE[s]['tickers'])}종목)", expanded=False):
-            st.caption(UNIVERSE[s]["desc"])
-            st.write(", ".join(UNIVERSE[s]["tickers"]))
+        sector_tickers += ACTIVE_UNIVERSE[s]["tickers"]
+        with st.expander(f"{s} ({len(ACTIVE_UNIVERSE[s]['tickers'])}종목)", expanded=False):
+            st.caption(ACTIVE_UNIVERSE[s]["desc"])
+            st.write(", ".join(ACTIVE_UNIVERSE[s]["tickers"]))
 
     # 직접 입력
     st.markdown("**직접 추가 (쉼표 구분)**")
-    manual_input = st.text_input("추가 티커", placeholder="예: AAPL,TSLA,NVDA")
+    ph_manual = "예: 005930,000660,035420" if IS_KR_OPT else "예: AAPL,TSLA,NVDA"
+    manual_input = st.text_input("추가 티커", placeholder=ph_manual)
     manual_tickers = [t.strip().upper() for t in manual_input.split(",") if t.strip()]
 
     # 최종 유니버스 합산

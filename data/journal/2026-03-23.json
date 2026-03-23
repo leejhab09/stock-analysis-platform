@@ -1,0 +1,88 @@
+{
+  "date": "2026-03-23",
+  "scans": [
+    {
+      "time": "09:27:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:32:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:37:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:42:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:47:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:52:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:57:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:02:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:07:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:12:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:17:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:22:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:27:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:32:02",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "10:37:02",
+      "status": "장외",
+      "signals": []
+    }
+  ],
+  "trades": [],
+  "summary": {
+    "total_scans": 15,
+    "total_trades": 0,
+    "total_invested": 0,
+    "tickers_traded": [],
+    "last_updated": "2026-03-23 10:37:02"
+  }
+}
