@@ -3,6 +3,8 @@
 조건: 당일 낙폭 + RSI + 지수 대비 초과 낙폭 + 거래량 급등 + 볼린저 하단
 """
 import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.notify import send_telegram
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import streamlit as st
@@ -333,6 +335,7 @@ if passed_df.empty:
     st.success("현재 조건 미충족 — 신호 없음")
 else:
     st.warning(f"**{len(passed_df)}개 종목** 조건 통과!")
+    send_telegram(f"[국내 매수신호] {len(passed_df)}개 종목 조건 통과\n" + "\n".join(passed_df["name"].tolist()))
 
     # 매수 대상 선정 (리밸런싱 스코어)
     port_passed = passed_df[passed_df["in_portfolio"]]

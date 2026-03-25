@@ -4,6 +4,9 @@
 매수 대상: 포트폴리오 내 비중 낮고 낙폭 큰 종목 (리밸런싱 관점)
 """
 import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.notify import send_telegram
+import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import streamlit as st
@@ -366,6 +369,7 @@ if passed_df.empty:
     st.success(f"현재 조건 미충족 — 신호 없음 ({' + '.join(active_conds)})")
 else:
     st.warning(f"**{len(passed_df)}개 종목**이 모든 조건 통과 → 매수 신호!")
+    send_telegram(f"[미국 매수신호] {len(passed_df)}개 종목 조건 통과\n" + "\n".join(passed_df["ticker"].tolist()))
 
     # 매수 대상 결정: 비중 낮고 낙폭 큰 종목 (리밸런싱)
     portfolio_passed = passed_df[passed_df["in_portfolio"]]
