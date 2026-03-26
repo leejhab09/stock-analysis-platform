@@ -23,7 +23,8 @@ from utils.optimizer import (
     sentiment_adjusted_returns
 )
 from utils.universe import (UNIVERSE, SP500_TOP30, NASDAQ_TOP20, MOMENTUM_UNIVERSE,
-    KR_UNIVERSE, KR_ALL_TICKERS, KR_KOSPI_TOP20, KR_MOMENTUM_UNIVERSE)
+    KR_UNIVERSE, KR_ALL_TICKERS, KR_KOSPI_TOP20, KR_MOMENTUM_UNIVERSE,
+    get_name)
 from utils.daily_runner import (
     run_daily_analysis, load_daily, list_daily_dates, daily_result_path
 )
@@ -44,6 +45,12 @@ except Exception:
 market_sel = st.radio("시장", ["🇺🇸 미국", "🇰🇷 국내"], horizontal=True,
                       label_visibility="collapsed", key="opt_market")
 IS_KR_OPT = (market_sel == "🇰🇷 국내")
+
+# 시장 전환 시 이전 분석 결과 초기화
+if st.session_state.get("opt_market_prev") != market_sel:
+    for k in ["opt_result", "bt_result", "prices", "model_name"]:
+        st.session_state.pop(k, None)
+    st.session_state["opt_market_prev"] = market_sel
 
 if IS_KR_OPT:
     st.markdown("<h2 style='color:#c0392b;background:#FFF0F0;padding:10px 16px;"
@@ -105,13 +112,22 @@ with st.sidebar:
         sector_tickers += ACTIVE_UNIVERSE[s]["tickers"]
         with st.expander(f"{s} ({len(ACTIVE_UNIVERSE[s]['tickers'])}종목)", expanded=False):
             st.caption(ACTIVE_UNIVERSE[s]["desc"])
-            st.write(", ".join(ACTIVE_UNIVERSE[s]["tickers"]))
+            st.write(", ".join(
+                f"{t}({get_name(t)})" for t in ACTIVE_UNIVERSE[s]["tickers"]
+            ))
 
     # 직접 입력
     st.markdown("**직접 추가 (쉼표 구분)**")
     ph_manual = "예: 005930,000660,035420" if IS_KR_OPT else "예: AAPL,TSLA,NVDA"
     manual_input = st.text_input("추가 티커", placeholder=ph_manual)
-    manual_tickers = [t.strip().upper() for t in manual_input.split(",") if t.strip()]
+    _raw_manual = [t.strip().upper() for t in manual_input.split(",") if t.strip()]
+    if IS_KR_OPT:
+        manual_tickers = [
+            t if (t.endswith(".KS") or t.endswith(".KQ")) else t + ".KS"
+            for t in _raw_manual
+        ]
+    else:
+        manual_tickers = _raw_manual
 
     # 최종 유니버스 합산
     if preset_tickers:
@@ -120,11 +136,11 @@ with st.sidebar:
         base = []
     all_selected = list(dict.fromkeys(base + sector_tickers + manual_tickers))
     if not all_selected:
-        all_selected = MOMENTUM_UNIVERSE  # fallback
+        all_selected = KR_MOMENTUM_UNIVERSE if IS_KR_OPT else MOMENTUM_UNIVERSE
 
     st.info(f"총 **{len(all_selected)}개** 종목 선택됨")
     with st.expander("선택된 종목 목록"):
-        st.write(", ".join(all_selected))
+        st.write(", ".join(f"{t}({get_name(t)})" for t in all_selected))
 
     st.markdown("---")
     st.markdown("### ⚙️ 최적화 설정")
@@ -331,7 +347,7 @@ with tab_opt:
     c1, c2 = st.columns([5, 5])
     with c1:
         w_df = pd.DataFrame([
-            {"종목": t, "비중(%)": round(w*100, 2)}
+            {"종목": t, "종목명": get_name(t), "비중(%)": round(w*100, 2)}
             for t, w in sorted(weights.items(), key=lambda x: -x[1])
         ])
         st.dataframe(
@@ -340,7 +356,7 @@ with tab_opt:
         )
     with c2:
         fig_pie = go.Figure(go.Pie(
-            labels=list(weights.keys()),
+            labels=[f"{t}({get_name(t)})" for t in weights.keys()],
             values=[round(v*100, 2) for v in weights.values()],
             hole=0.4, textinfo="label+percent",
             marker_colors=px.colors.qualitative.Set2,
@@ -356,6 +372,7 @@ with tab_opt:
         mom = opt_res["momentum_scores"].sort_values(ascending=False)
         mom_df = pd.DataFrame({
             "종목": mom.index,
+            "종목명": [get_name(t) for t in mom.index],
             "모멘텀 점수(%)": (mom.values * 100).round(2),
             "선택여부": ["✅ 편입" if t in weights else "—" for t in mom.index]
         })

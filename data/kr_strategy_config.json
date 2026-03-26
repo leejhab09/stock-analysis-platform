@@ -1,0 +1,21 @@
+{
+  "drop_threshold": -3.0,
+  "rsi_threshold": 35,
+  "relative_drop": -2.0,
+  "vol_ratio_min": 1.5,
+  "bb_threshold": 0.2,
+  "budget_krw": 500000,
+  "use_rsi": true,
+  "use_relative": true,
+  "use_volume": true,
+  "use_bb": true,
+  "take_profit_pct": 5.0,
+  "stop_loss_pct": -5.0,
+  "max_hold_days": 20,
+  "watch_tickers": [
+    "005930.KS","000660.KS","035420.KS","035720.KS","005380.KS",
+    "000270.KS","051910.KS","006400.KS","207940.KS","068270.KS",
+    "105560.KS","055550.KS","086790.KS","012330.KS","066570.KS",
+    "003670.KS","028260.KS","096770.KS","316140.KS","032830.KS"
+  ]
+}

@@ -1,0 +1,888 @@
+{
+  "date": "2026-03-25",
+  "market": "KR",
+  "scans": [
+    {
+      "time": "07:32:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "07:37:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "07:42:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "07:47:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "07:52:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "07:57:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:02:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:07:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:12:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:17:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:22:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:27:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:32:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:37:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:42:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:47:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:52:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "08:57:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "09:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "09:07:48",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:12:44",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:17:44",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:26:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "09:31:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "09:32:45",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:37:44",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:42:45",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:47:47",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:52:46",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "09:57:45",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "10:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:11:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:16:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:21:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:26:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:31:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:36:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:41:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:46:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:51:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "10:56:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:01:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:11:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:16:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:21:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:26:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:31:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:36:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:41:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:46:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:51:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:56:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:01:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:11:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:16:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:17:46",
+      "status": "장중",
+      "kospi": 1.79,
+      "kosdaq": 2.1,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:22:45",
+      "status": "장중",
+      "kospi": 1.66,
+      "kosdaq": 2.05,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:27:45",
+      "status": "장중",
+      "kospi": 1.94,
+      "kosdaq": 2.23,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:32:45",
+      "status": "장중",
+      "kospi": 1.76,
+      "kosdaq": 2.29,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:37:44",
+      "status": "장중",
+      "kospi": 1.6,
+      "kosdaq": 1.99,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:42:45",
+      "status": "장중",
+      "kospi": 1.57,
+      "kosdaq": 2.01,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:47:45",
+      "status": "장중",
+      "kospi": 1.65,
+      "kosdaq": 2.1,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:52:46",
+      "status": "장중",
+      "kospi": 1.69,
+      "kosdaq": 2.2,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:57:45",
+      "status": "장중",
+      "kospi": 1.73,
+      "kosdaq": 2.3,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:02:46",
+      "status": "장중",
+      "kospi": 1.67,
+      "kosdaq": 2.31,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:07:45",
+      "status": "장중",
+      "kospi": 1.57,
+      "kosdaq": 2.34,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:12:45",
+      "status": "장중",
+      "kospi": 1.82,
+      "kosdaq": 2.5,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:17:45",
+      "status": "장중",
+      "kospi": 1.84,
+      "kosdaq": 2.55,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:22:45",
+      "status": "장중",
+      "kospi": 1.7,
+      "kosdaq": 2.59,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:27:46",
+      "status": "장중",
+      "kospi": 1.67,
+      "kosdaq": 2.48,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:32:45",
+      "status": "장중",
+      "kospi": 1.93,
+      "kosdaq": 2.64,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:37:45",
+      "status": "장중",
+      "kospi": 1.75,
+      "kosdaq": 2.65,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:46:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "13:51:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "13:56:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:01:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:11:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:16:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:21:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:26:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:31:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:36:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:41:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:46:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:51:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:56:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:01:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:06:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:11:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:16:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:21:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:26:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:31:13",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:32:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:37:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:42:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:47:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:52:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:57:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:02:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:07:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:12:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:17:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:22:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:27:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:32:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:37:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:42:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:47:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:52:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:57:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:02:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:07:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:12:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:17:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:22:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:27:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:32:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:37:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:42:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:47:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:52:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:57:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "18:02:33",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "18:07:33",
+      "status": "장외",
+      "signals": []
+    }
+  ],
+  "trades": [],
+  "summary": {
+    "total_scans": 128,
+    "total_trades": 0,
+    "total_invested": 0,
+    "tickers_traded": [],
+    "last_updated": "2026-03-25 18:07:33"
+  }
+}

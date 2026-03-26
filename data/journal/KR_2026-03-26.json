@@ -1,0 +1,649 @@
+{
+  "date": "2026-03-26",
+  "market": "KR",
+  "scans": [
+    {
+      "time": "10:34:56",
+      "status": "장중",
+      "kospi": -1.57,
+      "kosdaq": 0.37,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "10:40:09",
+      "status": "장중",
+      "kospi": -1.76,
+      "kosdaq": -0.1,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "10:45:08",
+      "status": "장중",
+      "kospi": -1.65,
+      "kosdaq": 0.18,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "10:50:09",
+      "status": "장중",
+      "kospi": -1.61,
+      "kosdaq": 0.16,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "10:55:07",
+      "status": "장중",
+      "kospi": -1.48,
+      "kosdaq": 0.31,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:00:09",
+      "status": "장중",
+      "kospi": -1.6,
+      "kosdaq": 0.17,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:05:08",
+      "status": "장중",
+      "kospi": -1.65,
+      "kosdaq": 0.07,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:10:08",
+      "status": "장중",
+      "kospi": -1.71,
+      "kosdaq": -0.21,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:15:08",
+      "status": "장중",
+      "kospi": -2.04,
+      "kosdaq": -0.61,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:20:08",
+      "status": "장중",
+      "kospi": -1.77,
+      "kosdaq": -0.46,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:25:09",
+      "status": "장중",
+      "kospi": -1.75,
+      "kosdaq": -0.41,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:30:08",
+      "status": "장중",
+      "kospi": -2.08,
+      "kosdaq": -0.73,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:35:09",
+      "status": "장중",
+      "kospi": -2.4,
+      "kosdaq": -1.16,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:40:08",
+      "status": "장중",
+      "kospi": -2.68,
+      "kosdaq": -1.37,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "11:48:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:53:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "11:58:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:03:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:08:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:13:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:18:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:23:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:28:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "12:30:39",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 19,
+      "signals": []
+    },
+    {
+      "time": "12:35:07",
+      "status": "장중",
+      "kospi": -2.82,
+      "kosdaq": -1.64,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:40:08",
+      "status": "장중",
+      "kospi": -2.99,
+      "kosdaq": -1.69,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:45:08",
+      "status": "장중",
+      "kospi": -2.89,
+      "kosdaq": -1.59,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:50:07",
+      "status": "장중",
+      "kospi": -2.71,
+      "kosdaq": -1.4,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "12:55:07",
+      "status": "장중",
+      "kospi": -2.2,
+      "kosdaq": -0.94,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:00:09",
+      "status": "장중",
+      "kospi": -2.03,
+      "kosdaq": -0.76,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:05:08",
+      "status": "장중",
+      "kospi": -2.03,
+      "kosdaq": -0.73,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:10:08",
+      "status": "장중",
+      "kospi": -2.17,
+      "kosdaq": -0.83,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:15:09",
+      "status": "장중",
+      "kospi": -2.27,
+      "kosdaq": -0.9,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:20:08",
+      "status": "장중",
+      "kospi": -2.07,
+      "kosdaq": -0.79,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:25:08",
+      "status": "장중",
+      "kospi": -2.08,
+      "kosdaq": -0.76,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:30:09",
+      "status": "장중",
+      "kospi": -1.77,
+      "kosdaq": -0.54,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:35:09",
+      "status": "장중",
+      "kospi": -1.73,
+      "kosdaq": -0.51,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:40:18",
+      "status": "장중",
+      "kospi": -1.97,
+      "kosdaq": -0.7,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:45:39",
+      "status": "장중",
+      "kospi": -1.81,
+      "kosdaq": -0.58,
+      "scanned": 19,
+      "signals": []
+    },
+    {
+      "time": "13:50:24",
+      "status": "장중",
+      "kospi": -1.84,
+      "kosdaq": -0.54,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "13:58:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:03:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:08:32",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 1,
+      "signals": []
+    },
+    {
+      "time": "14:10:08",
+      "status": "장중",
+      "kospi": -2.21,
+      "kosdaq": -0.81,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "14:18:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:23:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:28:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:33:32",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 1,
+      "signals": []
+    },
+    {
+      "time": "14:35:08",
+      "status": "장중",
+      "kospi": -2.66,
+      "kosdaq": -1.36,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "14:40:08",
+      "status": "장중",
+      "kospi": -2.7,
+      "kosdaq": -1.36,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "14:45:07",
+      "status": "장중",
+      "kospi": -2.77,
+      "kosdaq": -1.49,
+      "scanned": 20,
+      "signals": []
+    },
+    {
+      "time": "14:53:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "14:58:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:03:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:08:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:13:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:18:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:23:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:28:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:33:36",
+      "status": "장중",
+      "kospi": null,
+      "kosdaq": null,
+      "scanned": 0,
+      "signals": []
+    },
+    {
+      "time": "15:34:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:39:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:44:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:49:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:54:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "15:59:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:04:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:09:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:14:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:19:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:24:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:29:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:34:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:39:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:44:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:49:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:54:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "16:59:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:04:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:09:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:14:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:19:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:24:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:29:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:34:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:39:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:44:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:49:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:54:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "17:59:56",
+      "status": "장외",
+      "signals": []
+    },
+    {
+      "time": "18:04:56",
+      "status": "장외",
+      "signals": []
+    }
+  ],
+  "trades": [],
+  "summary": {
+    "total_scans": 91,
+    "total_trades": 0,
+    "total_invested": 0,
+    "tickers_traded": [],
+    "last_updated": "2026-03-26 18:04:56"
+  }
+}

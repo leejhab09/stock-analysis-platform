@@ -153,6 +153,78 @@ def update_journal(entry: dict):
     }
     save_json(jfile, journal)
 
+# ── 매도 체크 ─────────────────────────────────────────────────
+def check_sells(cfg: dict, price_map: dict):
+    """open 포지션 중 익절/손절/기간청산 조건 충족 시 자동 매도 기록"""
+    trades = load_json(TRADES_FILE, [])
+    open_trades = [t for t in trades if t.get("status") == "open"]
+    if not open_trades:
+        return
+
+    tp  = cfg.get("take_profit_pct", 7.0)
+    sl  = cfg.get("stop_loss_pct", -5.0)
+    mhd = cfg.get("max_hold_days", 20)
+    updated = False
+
+    for t in open_trades:
+        curr = price_map.get(t["ticker"])
+        if curr is None:
+            try:
+                hist = yf.Ticker(t["ticker"]).history(period="2d")
+                curr = float(hist["Close"].iloc[-1]) if not hist.empty else None
+            except Exception:
+                pass
+        if curr is None:
+            continue
+
+        buy_price = t["price"]
+        pnl_pct   = (curr - buy_price) / buy_price * 100
+
+        # 보유 일수
+        try:
+            buy_dt   = datetime.strptime(t["date"], "%Y-%m-%d %H:%M:%S")
+            hold_days = (datetime.now() - buy_dt).days
+        except Exception:
+            hold_days = 0
+
+        reason = None
+        if pnl_pct >= tp:
+            reason = f"익절 (+{pnl_pct:.2f}% ≥ +{tp}%)"
+        elif pnl_pct <= sl:
+            reason = f"손절 ({pnl_pct:.2f}% ≤ {sl}%)"
+        elif hold_days >= mhd:
+            reason = f"기간청산 ({hold_days}일 보유)"
+
+        if reason:
+            pnl_usd = round((curr - buy_price) * t["qty"], 2)
+            t["status"]     = "closed"
+            t["sell_price"] = round(curr, 2)
+            t["sell_date"]  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            t["pnl_usd"]    = pnl_usd
+            t["pnl_pct"]    = round(pnl_pct, 2)
+            t["sell_reason"]= reason
+            updated = True
+            log.info(f"  💰 자동매도: {t['ticker']} {t['qty']}주 "
+                     f"@ ${curr:.2f} | PnL ${pnl_usd:+.2f} ({pnl_pct:+.2f}%) | {reason}")
+            update_journal({
+                "_type":       "trade",
+                "action":      "SELL",
+                "time":        datetime.now().strftime("%H:%M:%S"),
+                "ticker":      t["ticker"],
+                "name":        t.get("name", t["ticker"]),
+                "price":       curr,
+                "qty":         t["qty"],
+                "amount_usd":  round(curr * t["qty"], 2),
+                "pnl_usd":     pnl_usd,
+                "pnl_pct":     round(pnl_pct, 2),
+                "hold_days":   hold_days,
+                "reason":      reason,
+            })
+
+    if updated:
+        save_json(TRADES_FILE, trades)
+
+
 # ── 메인 스캔 함수 ────────────────────────────────────────────
 def run_scan():
     log.info(f"=== 스캔 시작 | {market_status()} ===")
@@ -206,6 +278,9 @@ def run_scan():
     # 전체 비중 계산
     analyses  = [r for r in (analyze_ticker(t) for t in watch_tickers) if r]
     price_map = {r["ticker"]: r["curr_price"] for r in analyses}
+
+    # ── 매도 체크 (매수 전 선행 실행)
+    check_sells(cfg, price_map)
     total_val = sum(h["qty"] * price_map.get(h["ticker"], h["avg_price"]) for h in portfolio)
     weights   = {
         h["ticker"]: round(h["qty"] * price_map.get(h["ticker"], h["avg_price"]) / total_val * 100, 2)

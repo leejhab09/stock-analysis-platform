@@ -1,0 +1,21 @@
+{
+  "drop_threshold": -3.0,
+  "rsi_threshold": 40,
+  "high52w_drop": -20.0,
+  "vix_caution": 25,
+  "vix_half": 35,
+  "budget_usd": 1000,
+  "use_rsi": true,
+  "use_52w": true,
+  "use_vix": true,
+  "take_profit_pct": 7.0,
+  "stop_loss_pct": -5.0,
+  "max_hold_days": 20,
+  "watch_tickers": [
+    "AAPL","MSFT","NVDA","AMZN","META","GOOGL","TSLA","AVGO",
+    "AMD","NFLX","JPM","V","MA","UNH","LLY",
+    "PLTR","CRWD","DDOG","NET","SNOW",
+    "XOM","CVX","WMT","COST","MCD",
+    "SPY","QQQ","IWM"
+  ]
+}

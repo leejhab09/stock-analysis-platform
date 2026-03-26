@@ -118,6 +118,79 @@ def update_journal(entry: dict):
     }
     save_json(jfile, journal)
 
+# ── 매도 체크 ─────────────────────────────────────────────────
+def check_kr_sells(cfg: dict, price_map: dict):
+    """open 포지션 중 익절/손절/기간청산 조건 충족 시 자동 매도 기록"""
+    import yfinance as yf
+    trades = load_json(KR_TRADES_FILE, [])
+    open_trades = [t for t in trades if t.get("status") == "open"]
+    if not open_trades:
+        return
+
+    tp  = cfg.get("take_profit_pct", 5.0)
+    sl  = cfg.get("stop_loss_pct", -5.0)
+    mhd = cfg.get("max_hold_days", 20)
+    updated = False
+
+    for t in open_trades:
+        tk   = suffix(t["ticker"])
+        curr = price_map.get(tk)
+        if curr is None:
+            try:
+                hist = yf.Ticker(tk).history(period="2d")
+                curr = float(hist["Close"].iloc[-1]) if not hist.empty else None
+            except Exception:
+                pass
+        if curr is None:
+            continue
+
+        buy_price = t["price"]
+        pnl_pct   = (curr - buy_price) / buy_price * 100
+
+        try:
+            buy_dt    = datetime.strptime(t["date"], "%Y-%m-%d %H:%M:%S")
+            hold_days = (datetime.now() - buy_dt).days
+        except Exception:
+            hold_days = 0
+
+        reason = None
+        if pnl_pct >= tp:
+            reason = f"익절 (+{pnl_pct:.2f}% ≥ +{tp}%)"
+        elif pnl_pct <= sl:
+            reason = f"손절 ({pnl_pct:.2f}% ≤ {sl}%)"
+        elif hold_days >= mhd:
+            reason = f"기간청산 ({hold_days}일 보유)"
+
+        if reason:
+            pnl_krw = round((curr - buy_price) * t["qty"])
+            t["status"]     = "closed"
+            t["sell_price"] = curr
+            t["sell_date"]  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            t["pnl_krw"]    = pnl_krw
+            t["pnl_pct"]    = round(pnl_pct, 2)
+            t["sell_reason"]= reason
+            updated = True
+            log.info(f"  💰 자동매도: {t['ticker']} {t.get('name','')} {t['qty']}주 "
+                     f"@ ₩{curr:,} | PnL ₩{pnl_krw:+,} ({pnl_pct:+.2f}%) | {reason}")
+            update_journal({
+                "_type":      "trade",
+                "action":     "SELL",
+                "time":       datetime.now().strftime("%H:%M:%S"),
+                "ticker":     t["ticker"],
+                "name":       t.get("name", t["ticker"]),
+                "price":      curr,
+                "qty":        t["qty"],
+                "amount_krw": round(curr * t["qty"]),
+                "pnl_krw":    pnl_krw,
+                "pnl_pct":    round(pnl_pct, 2),
+                "hold_days":  hold_days,
+                "reason":     reason,
+            })
+
+    if updated:
+        save_json(KR_TRADES_FILE, trades)
+
+
 def run_kr_scan():
     log.info(f"=== KR 스캔 시작 | {market_status()} ===")
 
@@ -158,6 +231,9 @@ def run_kr_scan():
     # 전체 분석
     analyses  = [r for r in (analyze_kr_ticker(t) for t in watch_tickers) if r]
     price_map = {r["ticker"]: r["curr_price"] for r in analyses}
+
+    # ── 매도 체크 (매수 전 선행 실행)
+    check_kr_sells(cfg, price_map)
 
     # 비중 계산
     total_val = sum(h["qty"] * price_map.get(suffix(h["ticker"]), h["avg_price"]) for h in portfolio)
