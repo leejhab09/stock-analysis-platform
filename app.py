@@ -1,61 +1,115 @@
+"""
+app.py — Stock Analysis Platform · Home Dashboard
+"""
+
 import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-import yfinance as yf
+from utils.quant_engine import get_vix, fetch_index_prices, UNIVERSE, STRATEGY_INFO
 
-# 페이지 설정
-st.set_page_config(page_title="주식 분석 플랫폼 v2.0", layout="wide")
+st.set_page_config(
+    page_title="Stock Analysis Platform",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-# 1. 사이드바 - 시장 지표 (VIX 등)
-st.sidebar.header("📊 시장 실시간 지표")
+# ─── Sidebar ────────────────────────────────
+st.sidebar.title("📈 Stock Analysis Platform")
+st.sidebar.markdown("---")
+st.sidebar.markdown("""
+### 페이지 안내
+| 페이지 | 내용 |
+|--------|------|
+| 🏠 홈 | 대시보드 요약 |
+| 🌡️ 시장체력 | VIX + 지수 현황 |
+| 🔍 스캐너 | 신호 스캔 |
+| 📊 전략시각화 | 차트 분석 |
+| 📉 백테스팅 | 전략 검증 |
+""")
 
-def get_vix():
-    try:
-        vix = yf.Ticker("^VIX")
-        vix_data = vix.history(period="1d")
-        if not vix_data.empty:
-            return round(vix_data['Close'].iloc[-1], 2)
-        return "데이터 없음"
-    except:
-        return "연결 에러"
+# ─── Title ──────────────────────────────────
+st.title("📈 Stock Analysis Platform")
+st.markdown("**Multi-Factor Mean Reversion Strategy** · Freqtrade-inspired framework")
+st.markdown("---")
 
-vix_score = get_vix()
-st.sidebar.metric(label="VIX (공포지수)", value=vix_score)
-st.sidebar.metric(label="금리 인하 확률 (Polymarket)", value="68%", delta="-2%")
+# ─── VIX + Market Overview ──────────────────
+col_vix, col_sp, col_nq, col_dw, col_ks = st.columns(5)
 
-# 2. 메인 화면 레이아웃
-st.title("📈 스마트 주식 분석 & 자금 흐름 대시보드")
+vix, regime, regime_color = get_vix()
+with col_vix:
+    if vix:
+        st.metric("🌡️ VIX", f"{vix:.2f}", help="CBOE Volatility Index")
+        st.markdown(f"<span style='color:{regime_color};font-weight:bold'>{regime}</span>",
+                    unsafe_allow_html=True)
+    else:
+        st.metric("🌡️ VIX", "N/A")
 
-col1, col2 = st.columns([2, 1])
+indices = fetch_index_prices()
+cols = [col_sp, col_nq, col_dw, col_ks]
+names = ["S&P 500", "NASDAQ", "DOW", "KOSPI"]
+for col, name in zip(cols, names):
+    with col:
+        if name in indices:
+            d = indices[name]
+            delta_str = f"{d['change_pct']:+.2f}%"
+            st.metric(name, f"{d['price']:,.2f}", delta_str)
+        else:
+            st.metric(name, "N/A")
 
-with col1:
-    st.subheader("💡 시장 자금 흐름 (Sankey Diagram)")
-    
-    # Sankey Diagram 데이터 구성
-    fig = go.Figure(data=[go.Sankey(
-        node = dict(
-          pad = 15,
-          thickness = 20,
-          line = dict(color = "black", width = 0.5),
-          label = ["개인투자자", "기관", "외국인", "반도체 섹터", "2차전지 섹터", "현금보유"],
-          color = ["#3366CC", "#DC3912", "#FF9900", "#109618", "#990099", "#AAAAAA"]
-        ),
-        link = dict(
-          source = [0, 1, 2, 0, 1, 2], 
-          target = [3, 3, 4, 5, 5, 5], 
-          value = [40, 60, 30, 20, 10, 50] 
-      ))])
+st.markdown("---")
 
-    fig.update_layout(title_text="주요 투자 주체별 섹터 자금 이동 (실시간 추정)", font_size=12)
-    st.plotly_chart(fig, use_container_width=True)
+# ─── Strategy Summary ───────────────────────
+st.subheader("🧠 전략 요약")
 
-with col2:
-    st.subheader("📰 뉴스 감성 분석")
-    news_input = st.text_area("분석할 뉴스 기사를 입력하세요:", height=150, placeholder="여기에 뉴스 내용을 붙여넣으세요...")
-    if st.button("감성 분석 실행"):
-        st.success("분석 완료: 긍정(Positive) - AI 점수: 85점")
-        st.progress(0.85)
+c1, c2, c3 = st.columns(3)
+with c1:
+    st.info("""
+**📐 진입 조건 (3중 합치)**
+- RSI(14) < 35 ← 과매도
+- MFI(14) < 35 ← 자금 이탈
+- Close ≤ BB Lower(20, 2σ) ← 통계 하단
+""")
+with c2:
+    st.warning("""
+**📤 청산 조건**
+- 진입 후 10 거래일 경과 후 청산
+- (확장 예정) RSI > 65 조기 청산
+- (확장 예정) BB 상단 도달 청산
+""")
+with c3:
+    st.success("""
+**🌡️ VIX 레짐 필터**
+- VIX < 20 → 공격적 매매
+- VIX 20~30 → 신중 (축소)
+- VIX ≥ 30 → 현금 보유
+""")
 
-# 3. 하단 캡션 (따옴표 에러 완벽 수정)
-st.divider()
-st.caption("※ 본 플랫폼은 데이터 시각화 및 연구 참고용입니다. 실제 투자 시에는 전문가와 상의하시기 바랍니다.")
+# ─── Universe Overview ──────────────────────
+st.markdown("---")
+st.subheader("🌐 스캔 유니버스")
+
+ucols = st.columns(4)
+for i, (group, tickers) in enumerate(UNIVERSE.items()):
+    with ucols[i]:
+        st.markdown(f"**{group}** ({len(tickers)}개)")
+        st.markdown("\n".join([f"- `{t}`" for t in tickers[:8]]))
+        if len(tickers) > 8:
+            st.markdown(f"_... 외 {len(tickers)-8}개_")
+
+# ─── Navigation Guide ───────────────────────
+st.markdown("---")
+st.subheader("🗺️ 분석 플로우")
+
+flow_cols = st.columns(4)
+pages = [
+    ("🌡️ 시장체력",   "VIX 레짐 확인 후\n매매 가능 여부 판단"),
+    ("🔍 스캐너",     "전체 유니버스 스캔\n신호 종목 발굴"),
+    ("📊 전략시각화", "개별 종목 차트\n진입 시점 확인"),
+    ("📉 백테스팅",   "전략 성과 검증\n통계 리포트"),
+]
+for col, (title, desc) in zip(flow_cols, pages):
+    with col:
+        st.markdown(f"### {title}")
+        st.caption(desc)
+
+st.markdown("---")
+st.caption("v1.0 · Multi-Factor Mean Reversion · Freqtrade-inspired")
