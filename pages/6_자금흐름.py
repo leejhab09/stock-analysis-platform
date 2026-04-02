@@ -155,52 +155,92 @@ def aggregate_daily_sector(df: pd.DataFrame) -> pd.DataFrame:
 # ─── Chart builders ──────────────────────────────────────────────────────────
 
 def build_sankey(sector_flows: dict, start_date, end_date) -> go.Figure:
-    node_labels = ["기관", "외국인", "개인"] + list(SECTOR_STOCKS.keys())
+    sectors = list(SECTOR_STOCKS.keys())
+    n_sec = len(sectors)
+
+    # ── 노드 레이블: 이름만 표시 (금액은 hover로)
+    node_labels = list(["기관", "외국인", "개인"]) + list(sectors)
+
+    # ── hover용 노드 커스텀데이터
+    node_hover = []
+    for inv in ["기관", "외국인", "개인"]:
+        total = sum(sector_flows[inv].values())
+        node_hover.append(f"{inv} 총순매수: {total:+,.1f}억원")
+    for sec in sectors:
+        total = sum(sector_flows[inv].get(sec, 0) for inv in ["기관", "외국인", "개인"])
+        node_hover.append(f"{sec} 순매수 합계: {total:+,.1f}억원")
+
+    # ── 노드 색상
     node_colors = (
         [INVESTOR_COLORS["기관"], INVESTOR_COLORS["외국인"], INVESTOR_COLORS["개인"]]
-        + [SECTOR_COLOR] * len(SECTOR_STOCKS)
+        + ["#7B1FA2" if i % 2 == 0 else "#AB47BC" for i in range(n_sec)]
     )
-    investor_idx = {"기관": 0, "외국인": 1, "개인": 2}
-    sector_idx   = {s: i + 3 for i, s in enumerate(SECTOR_STOCKS.keys())}
 
-    sources, targets, values, link_colors = [], [], [], []
+    # ── 노드 위치: 투자자 왼쪽, 섹터 오른쪽
+    x_nodes = [0.01, 0.01, 0.01] + [0.99] * n_sec
+    y_inv   = [0.15, 0.50, 0.85]
+    y_sec   = [0.03 + 0.94 * i / max(n_sec - 1, 1) for i in range(n_sec)]
+    y_nodes = y_inv + y_sec
+
+    investor_idx = {"기관": 0, "외국인": 1, "개인": 2}
+    sector_idx   = {s: i + 3 for i, s in enumerate(sectors)}
+
+    sources, targets, values, link_colors, hover_texts = [], [], [], [], []
 
     for investor in ["기관", "외국인", "개인"]:
         for sector, value_억 in sector_flows[investor].items():
-            if abs(value_억) < 0.1:
+            if abs(value_억) < 0.5:   # 0.5억 미만 무시
                 continue
-            if value_억 > 0:  # net buyer: investor → sector
+            if value_억 > 0:          # 순매수 → 투자자 → 섹터
                 sources.append(investor_idx[investor])
                 targets.append(sector_idx[sector])
                 values.append(value_억)
                 link_colors.append(INVESTOR_LINK_COLORS[investor])
-            else:             # net seller: sector → investor
+                hover_texts.append(f"{investor} → {sector}<br>{value_억:+,.1f}억원 (순매수)")
+            else:                     # 순매도 → 섹터 → 투자자 (회색)
                 sources.append(sector_idx[sector])
                 targets.append(investor_idx[investor])
                 values.append(-value_억)
-                link_colors.append(INVESTOR_LINK_COLORS[investor])
+                link_colors.append("rgba(180,180,180,0.35)")
+                hover_texts.append(f"{sector} → {investor}<br>{value_억:+,.1f}억원 (순매도)")
 
     fig = go.Figure(go.Sankey(
         arrangement="snap",
+        textfont=dict(
+            size=13,
+            color="#111111",
+            family="Arial, sans-serif",
+        ),
         node=dict(
             label=node_labels,
             color=node_colors,
-            pad=20,
-            thickness=20,
+            x=x_nodes,
+            y=y_nodes,
+            pad=18,
+            thickness=28,
+            line=dict(color="rgba(0,0,0,0)", width=0),
+            customdata=node_hover,
+            hovertemplate="<b>%{customdata}</b><extra></extra>",
         ),
         link=dict(
             source=sources,
             target=targets,
             value=values,
             color=link_colors,
+            customdata=hover_texts,
+            hovertemplate="%{customdata}<extra></extra>",
         ),
     ))
     fig.update_layout(
-        title_text="투자자별 섹터 자금흐름",
-        height=620,
-        font_size=13,
+        title=dict(
+            text=f"투자자별 섹터 자금흐름 ({start_date} ~ {end_date})",
+            font=dict(size=16, color="#111111"),
+        ),
+        height=720,
+        font=dict(size=13, color="#111111", family="Arial, sans-serif"),
         paper_bgcolor="#FFFFFF",
-        margin=dict(l=20, r=20, t=50, b=20),
+        plot_bgcolor="#FFFFFF",
+        margin=dict(l=10, r=10, t=60, b=10),
     )
     return fig
 
@@ -237,6 +277,13 @@ def build_stacked_bar(daily_df: pd.DataFrame, investor_col: str, investor_label:
     return fig
 
 
+def _hex_to_rgba(hex_color: str, alpha: float = 0.15) -> str:
+    """Convert #RRGGBB to rgba(r,g,b,alpha) for Plotly fillcolor."""
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
+
+
 def build_total_line(daily_df: pd.DataFrame, investor_col: str, investor_label: str, color: str) -> go.Figure:
     """Line chart of daily total (all sectors summed) for one investor."""
     total = daily_df.groupby("날짜")[investor_col].sum().reset_index()
@@ -250,7 +297,7 @@ def build_total_line(daily_df: pd.DataFrame, investor_col: str, investor_label: 
         marker=dict(size=5),
         name=investor_label,
         fill="tozeroy",
-        fillcolor=color.replace(")", ",0.15)").replace("rgb(", "rgba(") if "rgb" in color else color + "26",
+        fillcolor=_hex_to_rgba(color, 0.15),
     ))
     fig.add_hline(y=0, line_dash="dash", line_color="gray", line_width=1)
     fig.update_layout(
@@ -425,6 +472,19 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 # ── Tab 1: Sankey ─────────────────────────────────────────────────────────────
 with tab1:
+    # SVG 텍스트 stroke 제거 → 한글 글자 선명하게
+    st.markdown("""
+    <style>
+    .js-plotly-plot .sankey .node-label text,
+    .js-plotly-plot .sankey text {
+        stroke: none !important;
+        stroke-width: 0 !important;
+        paint-order: normal !important;
+        -webkit-font-smoothing: antialiased;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.subheader("투자자 → 섹터 자금흐름 (Sankey)")
     sankey_fig = build_sankey(sector_flows, start_date, end_date)
     st.plotly_chart(sankey_fig, use_container_width=True)
