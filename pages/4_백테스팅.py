@@ -19,14 +19,40 @@ st.markdown("Multi-Factor Mean Reversion 전략의 과거 성과를 검증합니
 st.markdown("---")
 
 # ─── Controls ────────────────────────────────
+_groups = list(UNIVERSE.keys())
+_period_opts = ["3mo", "6mo", "1y", "2y", "3y", "5y"]
+if "shared_group" not in st.session_state:
+    st.session_state["shared_group"] = _groups[0]
+if "shared_ticker" not in st.session_state:
+    st.session_state["shared_ticker"] = UNIVERSE[_groups[0]][0]
+if "shared_period" not in st.session_state:
+    st.session_state["shared_period"] = "1y"
+if "shared_hold_days" not in st.session_state:
+    st.session_state["shared_hold_days"] = 10
+
 c1, c2, c3, c4 = st.columns([2, 1, 1, 1])
 with c1:
-    group_sel  = st.selectbox("그룹", list(UNIVERSE.keys()))
-    ticker_sel = st.selectbox("종목", UNIVERSE[group_sel])
+    _g_idx = _groups.index(st.session_state["shared_group"]) if st.session_state["shared_group"] in _groups else 0
+    group_sel = st.selectbox("그룹", _groups, index=_g_idx)
+    st.session_state["shared_group"] = group_sel
+    tickers_in_group = UNIVERSE[group_sel]
+    curr_ticker = st.session_state["shared_ticker"]
+    if curr_ticker not in tickers_in_group:
+        curr_ticker = tickers_in_group[0]
+    curr_idx = tickers_in_group.index(curr_ticker)
+    display_options = [f"{t} — {TICKER_NAMES.get(t, t)}" for t in tickers_in_group]
+    sel_idx = st.selectbox("종목", range(len(tickers_in_group)),
+                           format_func=lambda i: display_options[i],
+                           index=curr_idx)
+    ticker_sel = tickers_in_group[sel_idx]
+    st.session_state["shared_ticker"] = ticker_sel
 with c2:
-    period = st.selectbox("백테스트 기간", ["1y", "2y", "3y", "5y"], index=1)
+    _p_idx = _period_opts.index(st.session_state["shared_period"]) if st.session_state["shared_period"] in _period_opts else 2
+    period = st.selectbox("백테스트 기간", _period_opts, index=_p_idx)
+    st.session_state["shared_period"] = period
 with c3:
-    hold_days = st.number_input("보유 기간 (거래일)", min_value=1, max_value=60, value=10)
+    hold_days = st.number_input("보유 기간 (거래일)", min_value=1, max_value=60, value=st.session_state["shared_hold_days"])
+    st.session_state["shared_hold_days"] = int(hold_days)
 with c4:
     st.markdown("&nbsp;", unsafe_allow_html=True)
     st.markdown("&nbsp;", unsafe_allow_html=True)
@@ -253,3 +279,219 @@ with st.expander("📖 전략 설명"):
     st.markdown(STRATEGY_INFO["description"])
 
 st.caption(f"백테스트: {ticker_sel} · {period} · 보유 {hold_days}거래일 · 데이터: Yahoo Finance")
+
+# ─── Section A: 그룹 전체 백테스팅 ──────────────
+st.markdown("---")
+with st.expander("📊 그룹 전체 백테스팅", expanded=False):
+    st.markdown(f"**{group_sel}** 그룹의 모든 종목에 동일 전략을 적용하여 성과를 비교합니다.")
+    group_bt_btn = st.button("▶ 그룹 전체 실행", key="group_bt_btn")
+
+    if group_bt_btn:
+        group_tickers = UNIVERSE[group_sel]
+        group_rows = []
+
+        with st.spinner(f"{group_sel} 그룹 전체 백테스팅 중... ({len(group_tickers)}개 종목)"):
+            for tkr in group_tickers:
+                tkr_name = TICKER_NAMES.get(tkr, tkr)
+                try:
+                    tkr_df = fetch_ohlcv(tkr, period=period)
+                    if tkr_df.empty:
+                        group_rows.append({
+                            "종목": tkr, "이름": tkr_name,
+                            "거래수": "신호없음", "승률(%)": None,
+                            "평균수익(%)": None, "샤프": None,
+                            "MDD(%)": None, "최고수익(%)": None,
+                        })
+                        continue
+                    tkr_df = get_signals(tkr_df)
+                    if 'buy_sig' not in tkr_df.columns:
+                        group_rows.append({
+                            "종목": tkr, "이름": tkr_name,
+                            "거래수": "신호없음", "승률(%)": None,
+                            "평균수익(%)": None, "샤프": None,
+                            "MDD(%)": None, "최고수익(%)": None,
+                        })
+                        continue
+                    tkr_result = run_backtest(tkr_df, hold_days=hold_days)
+                    if tkr_result is None:
+                        group_rows.append({
+                            "종목": tkr, "이름": tkr_name,
+                            "거래수": "신호없음", "승률(%)": None,
+                            "평균수익(%)": None, "샤프": None,
+                            "MDD(%)": None, "최고수익(%)": None,
+                        })
+                    else:
+                        group_rows.append({
+                            "종목": tkr,
+                            "이름": tkr_name,
+                            "거래수": tkr_result["count"],
+                            "승률(%)": round(tkr_result["win_rate"], 1),
+                            "평균수익(%)": round(tkr_result["avg_ret"], 2),
+                            "샤프": round(tkr_result["sharpe"], 2),
+                            "MDD(%)": round(tkr_result["mdd"], 2),
+                            "최고수익(%)": round(tkr_result["best"], 2),
+                        })
+                except Exception:
+                    group_rows.append({
+                        "종목": tkr, "이름": tkr_name,
+                        "거래수": "오류", "승률(%)": None,
+                        "평균수익(%)": None, "샤프": None,
+                        "MDD(%)": None, "최고수익(%)": None,
+                    })
+
+        group_df = pd.DataFrame(group_rows)
+
+        # Separate valid and no-signal rows
+        valid_mask = group_df["승률(%)"].notna()
+        valid_df = group_df[valid_mask].sort_values("승률(%)", ascending=False)
+        invalid_df = group_df[~valid_mask]
+        sorted_df = pd.concat([valid_df, invalid_df], ignore_index=True)
+
+        def _color_group_row(row):
+            if row["승률(%)"] is None:
+                return [""] * len(row)
+            if row["승률(%)"] > 55:
+                color = "color:#00CC66;font-weight:bold"
+            elif row["승률(%)"] < 45:
+                color = "color:#FF4444;font-weight:bold"
+            else:
+                color = ""
+            return [color if col == "승률(%)" else "" for col in row.index]
+
+        # Fill None with "신호없음" for display in string columns
+        display_df = sorted_df.copy()
+        for col in ["거래수", "승률(%)", "평균수익(%)", "샤프", "MDD(%)", "최고수익(%)"]:
+            display_df[col] = display_df[col].apply(
+                lambda v: "신호없음" if v is None else v
+            )
+
+        styled_group = display_df.style.apply(_color_group_row, axis=1)
+        st.dataframe(styled_group, use_container_width=True, hide_index=True)
+
+        n_valid = valid_mask.sum()
+        n_total = len(group_rows)
+        st.caption(
+            f"총 {n_total}개 종목 중 {n_valid}개 신호 발생 · "
+            f"기간: {period} · 보유: {hold_days}거래일"
+        )
+
+# ─── Section B: Walk-Forward 검증 ───────────────
+st.markdown("---")
+with st.expander("🔄 Walk-Forward 검증", expanded=False):
+    st.markdown(
+        "전체 데이터를 In-Sample(학습)과 Out-of-Sample(검증)으로 분할하여 "
+        "과적합 여부를 확인합니다."
+    )
+    wf_split = st.slider(
+        "In-Sample 비율 (%)", min_value=50, max_value=80,
+        value=70, step=5, key="wf_split"
+    )
+    wf_btn = st.button("▶ Walk-Forward 실행", key="wf_btn")
+
+    if wf_btn:
+        with st.spinner(f"{ticker_sel} Walk-Forward 검증 중..."):
+            wf_df = fetch_ohlcv(ticker_sel, period=period)
+            if wf_df.empty:
+                st.error(f"{ticker_sel} 데이터를 가져올 수 없습니다.")
+            else:
+                wf_df = get_signals(wf_df)
+                if 'buy_sig' not in wf_df.columns:
+                    st.error("지표 계산 실패 — 데이터가 부족합니다.")
+                else:
+                    split_idx = int(len(wf_df) * wf_split / 100)
+                    in_sample_df  = wf_df.iloc[:split_idx]
+                    out_sample_df = wf_df.iloc[split_idx:]
+
+                    in_result  = run_backtest(in_sample_df,  hold_days=hold_days)
+                    out_result = run_backtest(out_sample_df, hold_days=hold_days)
+
+                    col_in, col_out = st.columns(2)
+
+                    with col_in:
+                        st.markdown("### 📚 In-Sample (학습)")
+                        st.caption(
+                            f"기간: {wf_df.index[0].date()} ~ "
+                            f"{wf_df.index[split_idx - 1].date()} "
+                            f"({wf_split}%)"
+                        )
+                        if in_result is None:
+                            st.warning("In-Sample 구간에 매수 신호가 없습니다.")
+                        else:
+                            st.metric("거래수",   f"{in_result['count']}회")
+                            st.metric("승률",     f"{in_result['win_rate']:.1f}%")
+                            st.metric("평균수익", f"{in_result['avg_ret']:+.2f}%")
+                            st.metric("샤프",     f"{in_result['sharpe']:.2f}")
+                            st.metric("MDD",      f"{in_result['mdd']:.2f}%")
+
+                    with col_out:
+                        st.markdown("### 🔮 Out-of-Sample (검증)")
+                        st.caption(
+                            f"기간: {wf_df.index[split_idx].date()} ~ "
+                            f"{wf_df.index[-1].date()} "
+                            f"({100 - wf_split}%)"
+                        )
+                        if out_result is None:
+                            st.warning("Out-of-Sample 구간에 매수 신호가 없습니다.")
+                        else:
+                            st.metric("거래수",   f"{out_result['count']}회")
+                            st.metric("승률",     f"{out_result['win_rate']:.1f}%")
+                            st.metric("평균수익", f"{out_result['avg_ret']:+.2f}%")
+                            st.metric("샤프",     f"{out_result['sharpe']:.2f}")
+                            st.metric("MDD",      f"{out_result['mdd']:.2f}%")
+
+                    # Interpretation
+                    if in_result is not None and out_result is not None:
+                        st.markdown("---")
+                        wr_diff = abs(out_result["win_rate"] - in_result["win_rate"])
+                        if wr_diff <= 10:
+                            st.success(
+                                f"✅ 과적합 없음 — In-Sample 승률 {in_result['win_rate']:.1f}%와 "
+                                f"Out-of-Sample 승률 {out_result['win_rate']:.1f}%의 차이가 "
+                                f"{wr_diff:.1f}%p로 10%p 이내입니다."
+                            )
+                        else:
+                            st.warning(
+                                f"⚠️ 과적합 의심 — In-Sample 승률 {in_result['win_rate']:.1f}%와 "
+                                f"Out-of-Sample 승률 {out_result['win_rate']:.1f}%의 차이가 "
+                                f"{wr_diff:.1f}%p로 10%p를 초과합니다."
+                            )
+
+                        # Bar chart comparison
+                        metrics_labels = ["승률(%)", "평균수익(%)", "샤프"]
+                        in_vals  = [
+                            in_result["win_rate"],
+                            in_result["avg_ret"],
+                            in_result["sharpe"],
+                        ]
+                        out_vals = [
+                            out_result["win_rate"],
+                            out_result["avg_ret"],
+                            out_result["sharpe"],
+                        ]
+
+                        fig_wf = go.Figure(data=[
+                            go.Bar(
+                                name="In-Sample",
+                                x=metrics_labels,
+                                y=in_vals,
+                                marker_color="#3498DB",
+                            ),
+                            go.Bar(
+                                name="Out-of-Sample",
+                                x=metrics_labels,
+                                y=out_vals,
+                                marker_color="#E74C3C",
+                            ),
+                        ])
+                        fig_wf.update_layout(
+                            barmode="group",
+                            title="In-Sample vs Out-of-Sample 성과 비교",
+                            height=350,
+                            plot_bgcolor="#FAFAFA",
+                            paper_bgcolor="#FFFFFF",
+                            font_color="#333333",
+                            xaxis=dict(gridcolor="#E8E8E8"),
+                            yaxis=dict(gridcolor="#E8E8E8"),
+                            legend=dict(orientation="h", yanchor="bottom", y=1.02),
+                        )
+                        st.plotly_chart(fig_wf, use_container_width=True)

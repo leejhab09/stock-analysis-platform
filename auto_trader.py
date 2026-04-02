@@ -11,6 +11,7 @@ import numpy as np
 import pytz
 import yfinance as yf
 from apscheduler.schedulers.blocking import BlockingScheduler
+from utils.notify import send_telegram
 
 # ── 경로 설정 ─────────────────────────────────────────────────
 BASE_DIR       = os.path.dirname(os.path.abspath(__file__))
@@ -195,6 +196,21 @@ def check_sells(cfg: dict, price_map: dict):
         elif hold_days >= mhd:
             reason = f"기간청산 ({hold_days}일 보유)"
 
+        # RSI 과매수 청산
+        rsi_exit = cfg.get("rsi_exit_threshold", 65)
+        if cfg.get("use_rsi_exit", True):
+            try:
+                hist_rsi = yf.Ticker(t["ticker"]).history(period="1mo")
+                delta = hist_rsi["Close"].diff()
+                gain = delta.clip(lower=0).rolling(14).mean()
+                loss = (-delta.clip(upper=0)).rolling(14).mean()
+                rs = gain / loss.replace(0, np.nan)
+                rsi_now = float((100 - 100/(1+rs)).iloc[-1])
+                if rsi_now >= rsi_exit and not reason:
+                    reason = f"RSI 과매수 청산 (RSI={rsi_now:.1f} ≥ {rsi_exit})"
+            except Exception:
+                pass
+
         if reason:
             pnl_usd = round((curr - buy_price) * t["qty"], 2)
             t["status"]     = "closed"
@@ -206,6 +222,8 @@ def check_sells(cfg: dict, price_map: dict):
             updated = True
             log.info(f"  💰 자동매도: {t['ticker']} {t['qty']}주 "
                      f"@ ${curr:.2f} | PnL ${pnl_usd:+.2f} ({pnl_pct:+.2f}%) | {reason}")
+            send_telegram(f"💰 [자동매도] {t['ticker']} @ ${curr:.2f}\n"
+                          f"손익: ${pnl_usd:+.2f} ({pnl_pct:+.2f}%) | 사유: {reason}")
             update_journal({
                 "_type":       "trade",
                 "action":      "SELL",
@@ -246,6 +264,7 @@ def run_scan():
         "vix_half": 30,         "budget_usd": 1000,
         "use_rsi": True,        "use_52w": True,
         "use_vix": True,        "watch_tickers": [],
+        "use_rsi_exit": True,   "rsi_exit_threshold": 65,
     })
     portfolio = load_json(PORTFOLIO_FILE, [])
     trades    = load_json(TRADES_FILE, [])
@@ -382,6 +401,9 @@ def run_scan():
 
     log.info(f"  🛒 자동매수: {target['ticker']} {exec_qty}주 @ ${exec_price:.2f} "
              f"= ${new_trade['amount_usd']:.0f} | {reason}")
+    send_telegram(f"🛒 [자동매수] {target['ticker']} {exec_qty:.2f}주 @ ${exec_price:.2f}\n"
+                  f"금액: ${new_trade['amount_usd']:.0f} | RSI: {target['rsi']} | VIX: {vix_val}\n"
+                  f"사유: {reason}")
 
 # ── 스케줄러 실행 ─────────────────────────────────────────────
 if __name__ == "__main__":

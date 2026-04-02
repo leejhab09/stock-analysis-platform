@@ -32,19 +32,41 @@ def light_layout(**kwargs):
     return base
 
 # ─── Ticker Selection ────────────────────────
+_groups = list(UNIVERSE.keys())
+_period_opts = ["3mo", "6mo", "1y", "2y", "3y", "5y"]
+if "shared_group" not in st.session_state:
+    st.session_state["shared_group"] = _groups[0]
+if "shared_ticker" not in st.session_state:
+    st.session_state["shared_ticker"] = UNIVERSE[_groups[0]][0]
+if "shared_period" not in st.session_state:
+    st.session_state["shared_period"] = "1y"
+if "shared_hold_days" not in st.session_state:
+    st.session_state["shared_hold_days"] = 10
+
 col1, col2, col3, col4 = st.columns([2, 2, 1, 1])
 with col1:
-    group_sel = st.selectbox("그룹 선택", list(UNIVERSE.keys()))
+    _g_idx = _groups.index(st.session_state["shared_group"]) if st.session_state["shared_group"] in _groups else 0
+    group_sel = st.selectbox("그룹 선택", _groups, index=_g_idx)
+    st.session_state["shared_group"] = group_sel
 with col2:
     tickers_in_group = UNIVERSE[group_sel]
+    curr_ticker = st.session_state["shared_ticker"]
+    if curr_ticker not in tickers_in_group:
+        curr_ticker = tickers_in_group[0]
+    curr_idx = tickers_in_group.index(curr_ticker)
     display_options = [f"{t} — {TICKER_NAMES.get(t, t)}" for t in tickers_in_group]
     sel_idx = st.selectbox("종목 선택", range(len(tickers_in_group)),
-                           format_func=lambda i: display_options[i])
+                           format_func=lambda i: display_options[i],
+                           index=curr_idx)
     ticker_sel = tickers_in_group[sel_idx]
+    st.session_state["shared_ticker"] = ticker_sel
 with col3:
-    period = st.selectbox("기간", ["3mo", "6mo", "1y", "2y"], index=1)
+    _p_idx = _period_opts.index(st.session_state["shared_period"]) if st.session_state["shared_period"] in _period_opts else 2
+    period = st.selectbox("기간", _period_opts, index=_p_idx)
+    st.session_state["shared_period"] = period
 with col4:
-    hold_days = st.number_input("매도 보유일", min_value=1, max_value=60, value=10)
+    hold_days = st.number_input("매도 보유일", min_value=1, max_value=60, value=st.session_state["shared_hold_days"])
+    st.session_state["shared_hold_days"] = int(hold_days)
 
 with st.expander("🔎 직접 티커 입력"):
     manual_ticker = st.text_input("티커 심볼 (예: AAPL, 005930.KS)", "").strip().upper()
