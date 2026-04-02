@@ -6,7 +6,7 @@ Multi-Factor Mean Reversion Strategy (Freqtrade-inspired structure)
 import numpy as np
 import pandas as pd
 import yfinance as yf
-import pandas_ta as ta
+import ta as ta_lib
 import streamlit as st
 
 # ─────────────────────────────────────────────
@@ -258,24 +258,18 @@ def get_signals(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     # ── Bollinger Bands ──────────────────────────
-    bbands = ta.bbands(df['Close'], length=20, std=2)
-    if bbands is None or bbands.empty:
+    bb = ta_lib.volatility.BollingerBands(df['Close'], window=20, window_dev=2)
+    df['bb_l'] = bb.bollinger_lband()
+    df['bb_u'] = bb.bollinger_hband()
+    df['bb_m'] = bb.bollinger_mavg()
+    if df['bb_l'].isna().all():
         return df
-
-    # Dynamic column name lookup (버전별 네이밍 차이 대응)
-    bb_l_col = next((c for c in bbands.columns if c.startswith('BBL')), None)
-    bb_u_col = next((c for c in bbands.columns if c.startswith('BBU')), None)
-    bb_m_col = next((c for c in bbands.columns if c.startswith('BBM')), None)
-    if not bb_l_col:
-        return df
-
-    df['bb_l'] = bbands[bb_l_col]
-    df['bb_u'] = bbands[bb_u_col]
-    df['bb_m'] = bbands[bb_m_col]
 
     # ── RSI & MFI ────────────────────────────────
-    df['rsi'] = ta.rsi(df['Close'], length=14)
-    df['mfi'] = ta.mfi(df['High'], df['Low'], df['Close'], df['Volume'], length=14)
+    df['rsi'] = ta_lib.momentum.RSIIndicator(df['Close'], window=14).rsi()
+    df['mfi'] = ta_lib.volume.MFIIndicator(
+        df['High'], df['Low'], df['Close'], df['Volume'], window=14
+    ).money_flow_index()
 
     # ── Individual signals ───────────────────────
     df['rsi_sig'] = df['rsi'] < 35
